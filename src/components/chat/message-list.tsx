@@ -1,17 +1,20 @@
 "use client"
 
 import * as React from "react"
+import { SparklesIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import type { Message } from "@/types/chat"
 import { UserMessage } from "./user-message"
 import { AIMessage } from "./ai-message"
-import { ReasoningIndicator } from "./reasoning-indicator"
+import { AIResponseLoading } from "./ai-response-loading"
 import { SourceCitation } from "./source-citation"
 import { PromptSuggestionCard } from "./prompt-suggestion-card"
 import { MessageActions } from "./message-actions"
 import { ResponseBlockRenderer } from "./response-block-renderer"
+import { AnswerTransparency } from "@/components/ai/answer-transparency"
 
 export interface MessageListProps {
   messages: Message[]
@@ -68,7 +71,7 @@ function MessageList({
       data-slot="message-list"
       className={cn("flex flex-col gap-5 overflow-y-auto px-4 py-6", className)}
     >
-      {messages.map((message) =>
+      {messages.map((message, index) =>
         message.role === "user" ? (
           <UserMessage key={message.id} content={message.content} timestamp={formatTime(message.timestamp)} />
         ) : (
@@ -88,6 +91,12 @@ function MessageList({
               // build a structured response but had no data" — both are
               // meaningfully different, so check presence, not length.
               message.blocks ? <ResponseBlockRenderer blocks={message.blocks} /> : undefined
+            }
+            transparency={
+              <AnswerTransparency
+                question={[...messages.slice(0, index)].reverse().find((m) => m.role === "user")?.content}
+                contextMessageCount={index}
+              />
             }
             sources={
               // Blocks-bearing messages carry their own "sources" block instead.
@@ -126,19 +135,26 @@ function MessageList({
         )
       )}
 
-      {isAwaitingReply && <ReasoningIndicator label="Analyzing your question" />}
+      {isAwaitingReply && <AIResponseLoading key={lastMessage?.id} question={lastMessage?.content} />}
 
       {error && (
-        <div
-          role="alert"
-          className="flex flex-col items-start gap-2 rounded-input border border-error-subtle bg-error-subtle/60 px-4 py-3 text-sm text-error"
-        >
-          <p>{error}</p>
-          {onRetry && (
-            <Button type="button" variant="destructive" size="sm" onClick={onRetry}>
-              Try again
-            </Button>
-          )}
+        <div className="flex items-start gap-3">
+          <Avatar className="mt-0.5 shrink-0">
+            <AvatarFallback className="bg-ai-subtle text-ai">
+              <SparklesIcon className="size-3.5" />
+            </AvatarFallback>
+          </Avatar>
+          <div
+            role="alert"
+            className="flex flex-1 flex-col items-start gap-2 rounded-card rounded-tl-sm border border-error-subtle bg-error-subtle/60 px-4 py-3 text-sm text-error"
+          >
+            <p>{error}</p>
+            {onRetry && (
+              <Button type="button" variant="destructive" size="sm" onClick={onRetry}>
+                Try again
+              </Button>
+            )}
+          </div>
         </div>
       )}
 

@@ -12,6 +12,14 @@ export interface Source {
 export type MessageStatus = 'sending' | 'streaming' | 'complete' | 'error';
 
 /**
+ * User-facing, application-level stages shown while a reply is being
+ * generated. These describe observable app behavior, not the model's
+ * private reasoning — never rename these to sound like exposed
+ * chain-of-thought (e.g. "thinking deeply", "calculating confidence").
+ */
+export type ProcessingStage = 'understanding' | 'context' | 'analysis' | 'preparing';
+
+/**
  * Structured pieces an AI response can be made of. `blocks` is always the
  * authoritative rendering for an assistant message; a message's plain-text
  * `content` is derived from the TextBlock(s) within it (for Copy/a11y), not

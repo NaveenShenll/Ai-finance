@@ -2,72 +2,59 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { 
-  SparklesIcon, 
-  CopyIcon, 
-  RotateCcwIcon, 
-  SearchIcon, 
-  InfoIcon, 
-  TrendingUpIcon, 
+import {
+  SparklesIcon,
+  CopyIcon,
+  RotateCcwIcon,
+  SearchIcon,
+  InfoIcon,
+  TrendingUpIcon,
   AlertTriangleIcon,
-  MoonIcon,
-  SunIcon
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { 
-  Button, 
-  Input, 
-  Textarea, 
-  Label, 
-  Badge, 
-  Avatar, 
-  AvatarFallback, 
+import {
+  Button,
+  Input,
+  Textarea,
+  Label,
+  Badge,
+  Avatar,
+  AvatarFallback,
   AvatarGroup,
   AvatarGroupCount,
   AvatarBadge,
-  Tabs, 
-  TabsList, 
-  TabsTrigger, 
+  Tabs,
+  TabsList,
+  TabsTrigger,
   TabsContent,
   Skeleton,
   Separator,
   NavItem
 } from "@/components/ui";
 
-import { 
-  UserMessage, 
-  AIMessage, 
-  ReasoningIndicator, 
-  SourceCitation, 
-  AIActionButton, 
-  PromptSuggestionCard 
+import {
+  UserMessage,
+  AIMessage,
+  ReasoningIndicator,
+  SourceCitation,
+  AIActionButton,
+  PromptSuggestionCard
 } from "@/components/chat";
 
-import { 
-  StockCard, 
-  FinancialMetric, 
-  MarketStatus, 
-  ChartContainer, 
-  NewsItem 
+import {
+  StockCard,
+  FinancialMetric,
+  MarketStatus,
+  ChartContainer,
+  NewsItem
 } from "@/components/finance";
 
+import { ModeToggle } from "@/components/shell";
+
 export default function ShowcasePage() {
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("components");
   const [chartRange, setChartRange] = React.useState("1M");
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(prev => {
-      const newVal = !prev;
-      if (newVal) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-      return newVal;
-    });
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-200 pb-20">
@@ -84,14 +71,7 @@ export default function ShowcasePage() {
         </div>
         
         <div className="flex items-center gap-4">
-          <Button 
-            variant="outline" 
-            size="icon-sm" 
-            onClick={toggleDarkMode}
-            title={isDarkMode ? "Light Mode" : "Dark Mode"}
-          >
-            {isDarkMode ? <SunIcon className="size-4 text-warning" /> : <MoonIcon className="size-4" />}
-          </Button>
+          <ModeToggle />
           <Link
             href="/"
             className="text-xs font-medium text-text-secondary hover:text-foreground transition-colors"
@@ -112,7 +92,7 @@ export default function ShowcasePage() {
           </Badge>
           <h2 className="text-display font-bold">Visual Design Foundations</h2>
           <p className="text-body max-w-2xl text-text-secondary">
-            This dashboard demonstrates all CSS variables, typography tiers, micro-animations, standard inputs, alerts, AI-specific layouts, and financial cards available in our next-generation frontend. Toggle Dark Mode above to verify tokens.
+            This dashboard demonstrates all CSS variables, typography tiers, micro-animations, standard inputs, alerts, AI-specific layouts, and financial cards available in our next-generation frontend. Use the theme control above (Light / Dark / System) to verify tokens.
           </p>
         </div>
 
@@ -120,6 +100,7 @@ export default function ShowcasePage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-muted p-1 rounded-control mb-8">
             <TabsTrigger value="components" className="px-4 py-2 text-xs font-semibold rounded-input">UI Components & Styles</TabsTrigger>
+            <TabsTrigger value="theme" className="px-4 py-2 text-xs font-semibold rounded-input">Theme System</TabsTrigger>
             <TabsTrigger value="ai-chat" className="px-4 py-2 text-xs font-semibold rounded-input">AI Message Showcase</TabsTrigger>
             <TabsTrigger value="finance" className="px-4 py-2 text-xs font-semibold rounded-input">Financial Modules</TabsTrigger>
             <TabsTrigger value="states" className="px-4 py-2 text-xs font-semibold rounded-input">Loading & Error States</TabsTrigger>
@@ -321,6 +302,28 @@ export default function ShowcasePage() {
                 </div>
               </div>
             </section>
+          </TabsContent>
+
+          {/* ==================================================
+              TAB: THEME SYSTEM (Light / Dark / System)
+              ================================================== */}
+          <TabsContent value="theme" className="flex flex-col gap-6">
+            <section className="flex flex-col gap-2">
+              <h3 className="text-h3 border-b border-border pb-2">Light / Dark / System</h3>
+              <p className="text-body max-w-2xl text-text-secondary">
+                Theme is applied via a single <code className="text-xs font-mono">dark</code> class on{" "}
+                <code className="text-xs font-mono">&lt;html&gt;</code> (managed by{" "}
+                <code className="text-xs font-mono">next-themes</code>), with every color sourced from the semantic
+                CSS variables in <code className="text-xs font-mono">globals.css</code> — never hardcoded per
+                component. Switch themes with the control in the header; the columns below force each palette
+                side-by-side using the same application components, for comparison only.
+              </p>
+            </section>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <ThemePreviewColumn label="Light" forceClass="light" />
+              <ThemePreviewColumn label="Dark" forceClass="dark" />
+            </div>
           </TabsContent>
 
           {/* ==================================================
@@ -561,6 +564,61 @@ export default function ShowcasePage() {
             </div>
           </TabsContent>
         </Tabs>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Forces one palette (`.light` / `.dark`) on a subtree regardless of the
+ * page's actual active theme, so both can be compared side-by-side. Renders
+ * real application components — not theme-specific duplicates — per
+ * "Design System Showcase" phase requirements.
+ */
+function ThemePreviewColumn({ label, forceClass }: { label: string; forceClass: "light" | "dark" }) {
+  return (
+    <div className={cn(forceClass, "flex flex-col gap-4 rounded-container border border-border bg-background p-5 text-foreground")}>
+      <span className="text-label">{label}</span>
+
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm">Primary</Button>
+        <Button size="sm" variant="secondary">Secondary</Button>
+        <Button size="sm" variant="outline">Outline</Button>
+        <Button size="sm" variant="destructive">Destructive</Button>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        <Badge variant="success">Success</Badge>
+        <Badge variant="negative">Negative</Badge>
+        <Badge variant="ai">AI</Badge>
+        <Badge variant="outline">Outline</Badge>
+      </div>
+
+      <Input placeholder="Search AAPL, TSLA, NVDA..." />
+
+      <StockCard
+        stock={{ symbol: "AAPL", name: "Apple Inc.", price: 182.52, change: 1.43, changePercent: 0.79 }}
+        history={[180.5, 181.2, 180.9, 182.1, 181.8, 182.52]}
+      />
+
+      <div className="rounded-card border border-border bg-surface p-4 grid grid-cols-2 gap-4">
+        <FinancialMetric label="Market Cap" value="$3.15T" change="+$12.4B" changeTone="positive" />
+        <FinancialMetric label="P/E Ratio" value="68.20" change="-1.20" changeTone="negative" />
+      </div>
+
+      <div className="rounded-card border border-border bg-surface p-4">
+        <AIMessage content="AAPL cash flow remains robust, supported by Services growth and disciplined buybacks." />
+      </div>
+
+      <div className="flex flex-col gap-2 rounded-card border border-border bg-surface p-4">
+        <Skeleton className="h-3.5 w-[80%]" />
+        <Skeleton className="h-3.5 w-[55%]" />
+        <Skeleton className="h-3.5 w-[65%]" />
+      </div>
+
+      <div className="flex items-start gap-2.5 rounded-input border border-error-subtle bg-error-subtle/60 p-3 text-error">
+        <AlertTriangleIcon className="size-4 shrink-0 mt-0.5" />
+        <span className="text-xs leading-normal">Something went wrong while generating your answer.</span>
       </div>
     </div>
   );

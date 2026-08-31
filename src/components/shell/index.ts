@@ -9,6 +9,8 @@ export type { HeaderProps } from "./header";
 
 export { AIToggle } from "./ai-toggle";
 
+export { ModeToggle } from "./mode-toggle";
+
 export { NewChatAction } from "./new-chat-action";
 export type { NewChatActionProps } from "./new-chat-action";
 

@@ -10,6 +10,9 @@ export type { AIMessageProps } from "./ai-message";
 export { ReasoningIndicator } from "./reasoning-indicator";
 export type { ReasoningIndicatorProps } from "./reasoning-indicator";
 
+export { AIResponseLoading } from "./ai-response-loading";
+export type { AIResponseLoadingProps } from "./ai-response-loading";
+
 export { SourceCitation } from "./source-citation";
 export type { SourceCitationProps } from "./source-citation";
 

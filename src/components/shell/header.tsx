@@ -5,6 +5,7 @@ import { MenuIcon, SparklesIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { AIToggle } from "./ai-toggle"
+import { ModeToggle } from "./mode-toggle"
 
 export interface HeaderProps {
   title?: React.ReactNode
@@ -45,6 +46,7 @@ function Header({ title, onMenuClick, actions }: HeaderProps) {
 
       <div className="flex shrink-0 items-center gap-1.5">
         <AIToggle />
+        <ModeToggle />
         {actions && <div className="flex items-center gap-1.5">{actions}</div>}
       </div>
     </header>

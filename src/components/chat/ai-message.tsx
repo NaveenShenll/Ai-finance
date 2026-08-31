@@ -17,6 +17,8 @@ export interface AIMessageProps extends React.ComponentProps<"div"> {
   suggestions?: React.ReactNode
   /** Structured response content (e.g. from ResponseBlockRenderer), rendered below the text. */
   blocks?: React.ReactNode
+  /** AnswerTransparency disclosure, rendered below the content once the reply is complete. */
+  transparency?: React.ReactNode
 }
 
 /**
@@ -32,6 +34,7 @@ function AIMessage({
   sources,
   suggestions,
   blocks,
+  transparency,
   className,
   ...props
 }: AIMessageProps) {
@@ -64,6 +67,8 @@ function AIMessage({
         </div>
 
         {blocks}
+
+        {!isStreaming && transparency}
 
         {sources && <div className="flex flex-wrap gap-1.5">{sources}</div>}
         {suggestions && <div className="flex flex-col gap-1.5">{suggestions}</div>}
